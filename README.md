@@ -10,6 +10,13 @@ Python bindings for the official Sketchup API and an importer for blender based 
     1.  Support `Blender 3.2`
     2. Supoort `Sketchup 2022`
 
+* ##### 2021-03-29
+    1. Support `Blender 2.93 Alpha `
+    2. Support `Sketchup 2021`
+
+* ##### 2020-07-14
+    1. Support `Sketchup 2020`
+
 # Install
 1. download `sketchup_importer.zip
 ` from [Last Release](https://github.com/RedHaloStudio/Sketchup_Importer/releases)
