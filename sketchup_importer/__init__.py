@@ -626,7 +626,9 @@ class SceneImporter():
                        default_material='Material',
                        etype=None,
                        parent_name=None,
-                       parent_location=Vector((0, 0, 0))):
+                       parent_location=Vector((0, 0, 0)),
+                       hier=None,
+                       layers=None):
 
         # Check if this is a component that has already been duplicated. We
         # can skip writing this if it is already contained in a duplication
@@ -636,6 +638,11 @@ class SceneImporter():
             self.component_stats[(name,
                                   default_material)].append(parent_transform)
             return
+
+        if hier is None:
+            hier = []
+        if layers is None:
+            layers = []   
 
         # Get the mesh data for this object
         me, alpha = self.write_mesh_data(entities=entities, name=name,
@@ -674,7 +681,12 @@ class SceneImporter():
                 me.update(calc_edges=True)
                 ob_mesh.parent = ob
                 ob_mesh.location = Vector((0, 0, 0))
+                ob_mesh['su_layers'] = [l.name for l in layers]
+                ob_mesh['su_hier'] = hier
                 bpy.context.collection.objects.link(ob_mesh)
+
+        ob['su_layers'] = [l.name for l in layers]
+        ob['su_hier'] = hier
 
         # Nested adjustments to the world matrix
         loc = ob.location
@@ -707,7 +719,9 @@ class SceneImporter():
                                     group.material, default_material),
                                 etype=EntityType.group,
                                 parent_name=ob.name,
-                                parent_location=nested_location)
+                                parent_location=nested_location,
+                                hier=hier + [group.name],
+                                layers=layers + [group.layer] if group.layer else [])
 
         for instance in entities.instances:
             if instance.hidden:
@@ -729,7 +743,9 @@ class SceneImporter():
                                 default_material=mat_name,
                                 etype=EntityType.component,
                                 parent_name=ob.name,
-                                parent_location=nested_location)
+                                parent_location=nested_location,
+                                hier=hier + [cdef.name],
+                                layers=layers + [instance.layer] if instance.layer else [])
 
     def instance_object_or_group(self,
                                  name,
